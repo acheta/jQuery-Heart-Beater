@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Heart Beater Demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../src/jquery.heartBeater.js"></script>
+    
+    <script type="text/javascript" >
+      function animateHeart(heartSelector){
+          $('.left, .right', $(heartSelector)).animate({height: '85px'}, 100, function(){
+            $('.left, .right', $(heartSelector)).animate({height: '80px'}, 100); 
+          });
+      }
+      
+      function logEvent(eventName) {
+        $('#log').prepend('event: '+eventName+'\n')
+      }
+        
+      $(function(){
+        // Prepare options for heartbeater.
+        var options = {
+          limit: 10,
+          checkUserActivity: true
+        };
+        
+        // Create new heartbeater object.
+        var hb1 = $.createHeartBeater(options);
+        
+        // Bind animation function to the heartBeat event.
+        $(hb1).on('heartBeat', function(event){
+          animateHeart('.heart');
+        });
+        
+        // Bind when user became inactive to make heart semitransparent.
+        $(hb1).on($.Acheta.UserActivityChecker.EVENT_USER_BECAME_INACTIVE, function(event){
+          $('.heart').css({opacity:0.5});
+        });
+        
+        // Bind when user became active to make heart solid again.
+        // You can use constant of the UserActivityChecker or simply 'userBecameActive' string.
+        $(hb1).on($.Acheta.UserActivityChecker.EVENT_USER_BECAME_ACTIVE, function(event){
+          $('.heart').css({opacity:1});
+        });
+        
+        // Bind all events of heart beater to log them. Constants of HeartBeater and UserActivity checker are used.
+        $(hb1).on($.Acheta.HeartBeater.EVENT_HEARTBEAT + ' ' +
+                  $.Acheta.HeartBeater.EVENT_HEARTBEAT_STARTED + ' ' +
+                  $.Acheta.HeartBeater.EVENT_HEARTBEAT_PAUSED + ' ' +
+                  $.Acheta.HeartBeater.EVENT_HEARTBEAT_LIMIT_REACHED + ' ' +
+                  $.Acheta.UserActivityChecker.EVENT_USER_BECAME_ACTIVE + ' ' +
+                  $.Acheta.UserActivityChecker.EVENT_USER_BECAME_INACTIVE,
+                  function(event) {
+                    logEvent(event.type);
+                    refreshStats();
+                  });
+        
+        // Update information about heart beater.
+        function refreshStats() {
+          $('#count').val(hb1.getHeartBeatsCount());
+          $('#remaining').val(hb1.getHeartBeatsRemaining());
+          $('#status').val(hb1.getStatus());
+        }
+        
+        // Bind actions to buttons.
+        $('#start').on('click', function(e){
+          hb1.start();
+          refreshStats();
+        }); 
+        
+        $('#pause').on('click', function(e){
+          hb1.pause();
+          refreshStats();
+        });  
+        
+        $('#increase').on('click', function(e){
+          var limit = 10 + hb1.getHeartBeatsRemaining();
+          hb1.setLimit(limit);
+          refreshStats();
+        });
+        
+        $('#disableLimit').on('click', function(e){
+          hb1.setLimit(0);
+          refreshStats();
+        });
+        
+        
+        // Refresh stats instantly at the begining.
+        refreshStats();
+                  
+      });
+    </script>
+    
+    <style>
+       .heart {
+            position: relative;
+            width: 100px;
+            height: 90px;
+            left: 200px;
+        }
+        .heart .left,
+        .heart .right {
+            position: absolute;
+            content: "";
+            left: 50px;
+            top: 0;
+            width: 50px;
+            height: 80px;
+            background: red;
+            -moz-border-radius: 50px 50px 0 0;
+            border-radius: 50px 50px 0 0;
+            -webkit-transform: rotate(-45deg);
+               -moz-transform: rotate(-45deg);
+                -ms-transform: rotate(-45deg);
+                 -o-transform: rotate(-45deg);
+                    transform: rotate(-45deg);
+            -webkit-transform-origin: 0 100%;
+               -moz-transform-origin: 0 100%;
+                -ms-transform-origin: 0 100%;
+                 -o-transform-origin: 0 100%;
+                    transform-origin: 0 100%;
+        }
+        .heart .right {
+            left: 0;
+            -webkit-transform: rotate(45deg);
+               -moz-transform: rotate(45deg);
+                -ms-transform: rotate(45deg);
+                 -o-transform: rotate(45deg);
+                    transform: rotate(45deg);
+            -webkit-transform-origin: 100% 100%;
+               -moz-transform-origin: 100% 100%;
+                -ms-transform-origin: 100% 100%;
+                 -o-transform-origin: 100% 100%;
+                    transform-origin :100% 100%;
+        }
+        .blaster {
+          height: 30px;
+        }
+        .blaster .label{
+          float: left;
+        }
+        .blaster .event{
+          font-size: 25px;
+          padding: 3px 5px;
+        }
+        
+        body{
+          font-family: Arial;
+          font-size: 13px;
+          background: white;
+          color: #4F4F4F;
+        }
+        p{
+          width: 500px;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>Heart Beater demo</h1>
+    <p>
+      This is example of use of the <a href="https://github.com/acheta/jQuery-Heart-Beater">jQuery Heart Beater</a> - a little helper to perform actions in regular interval. See <a href="https://github.com/acheta/jQuery-Heart-Beater/blob/master/README.md">README file</a> for full doc.
+    </p>
+    <p>
+      In this example the Heart Beater triggers animation of the heart every 2 seconds and is scheduled to perform just 10 beats. 
+      While doing beating it is also monitoring the user's focus on the document and when the user becomes inactive it auto-pauses.
+      You can play with the buttons below to experience most of the functionality. All events triggered by the Heart Beater are logged below.
+    </p>
+
+    <div class="heart"><div class="left"></div><div class="right"></div></div>
+    Status: <input type="text" id="status" disabled /> 
+    Beat count: <input type="text" id="count" disabled /> 
+    Beats remaining: <input type="text" id="remaining" disabled /><br />
+    <input type="button" id="start" value="Start" />
+    <input type="button" id="pause" value="Pause" />
+    <input type="button" id="increase" value="Increase Limit by 10" />
+    <input type="button" id="disableLimit" value="Disable limit" />
+    <pre id="log"></pre>
+  </body>
+</html>
