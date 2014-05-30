@@ -1,0 +1,280 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Jquery-heart-beater by acheta</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="without-description">
+        <h1>Jquery-heart-beater</h1>
+        <p></p>
+        <p class="view"><a href="https://github.com/acheta/jQuery-Heart-Beater">View the Project on GitHub <small>acheta/jQuery-Heart-Beater</small></a></p>
+        <ul>
+          <li><a href="https://github.com/acheta/jQuery-Heart-Beater/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/acheta/jQuery-Heart-Beater/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/acheta/jQuery-Heart-Beater">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="jquery-heart-beater--user-activity-checker" class="anchor" href="#jquery-heart-beater--user-activity-checker"><span class="octicon octicon-link"></span></a>jQuery Heart Beater &amp; User Activity Checker</h1>
+
+<p>Heart Beater &amp; User Activity Checker are jQuery plugins to help you perform some regularly occuring stuff. Ie. regularly checking server for updates.</p>
+
+<h2>
+<a name="heart-beater" class="anchor" href="#heart-beater"><span class="octicon octicon-link"></span></a>Heart Beater</h2>
+
+<p>Triggers "heartBeat" event on given interval. It supports few config options to make your life easier.</p>
+
+<h3>
+<a name="factory-function-createheartbeateroptions-useractivitychecker" class="anchor" href="#factory-function-createheartbeateroptions-useractivitychecker"><span class="octicon octicon-link"></span></a>Factory function $.createHeartBeater([options[, userActivityChecker]]);</h3>
+
+<p>For quick and easy creation of the Heart Beater object you can use the factory function which will take care of any missing parameters. Factory accepts two optional parameters:</p>
+
+<ul>
+<li>
+<strong>options</strong> object to override defaults</li>
+<li>
+<strong>userActivityChecker</strong> an instance of $.Acheta.UserActivityChecker. See User Activity Checker below for details.</li>
+</ul><h4>
+<a name="example-use" class="anchor" href="#example-use"><span class="octicon octicon-link"></span></a>Example use</h4>
+
+<p>Using smart factory function to instantiate object with minimum effort.</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// Create HeartBeater object.</span>
+<span class="kd">var</span> <span class="nx">hb</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">createHeartBeater</span><span class="p">();</span>
+
+<span class="c1">// Listen for the heartBeat event to perform your stuff.</span>
+<span class="nx">$</span><span class="p">(</span><span class="nx">hb</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'heartBeat'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="c1">// Check something with server and update it on page.</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">'body'</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="s1">'heartBeat triggered '</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// Create HeartBeater object with custom options.</span>
+<span class="kd">var</span> <span class="nx">hb</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">createHeartBeater</span><span class="p">({</span>
+             <span class="nx">heartBeatInterval</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span>
+             <span class="nx">checkUserActivity</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+             <span class="nx">checkUserActivityInterval</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span>
+             <span class="nx">limit</span><span class="o">:</span> <span class="mi">153</span><span class="p">,</span>
+             <span class="nx">autoStart</span><span class="o">:</span> <span class="kc">false</span>
+         <span class="p">});</span>
+
+<span class="c1">// Listen for the heartBeat event to perform your stuff.</span>
+<span class="nx">$</span><span class="p">(</span><span class="nx">hb</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'heartBeat'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span> <span class="nx">doStuff</span><span class="p">();</span> <span class="p">});</span>
+</pre></div>
+
+<h3>
+<a name="heart-beater-options" class="anchor" href="#heart-beater-options"><span class="octicon octicon-link"></span></a>Heart Beater Options</h3>
+
+<p>You can pass custom options object to the factory.</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// Defaults.</span>
+<span class="p">{</span>
+  <span class="nx">heartBeatInterval</span><span class="o">:</span> <span class="mi">2000</span><span class="p">,</span> <span class="c1">// Interval of beating in milliseconds.</span>
+  <span class="nx">checkUserActivity</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>  <span class="c1">// Whether to be dependent on user's activity/focus in the document.</span>
+  <span class="nx">checkUserActivityInterval</span><span class="o">:</span> <span class="mi">500</span><span class="p">,</span> <span class="c1">// How often to evaluate user's activity.</span>
+  <span class="nx">limit</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1">// Set number of beats to be performed.</span>
+  <span class="nx">autoStart</span><span class="o">:</span> <span class="kc">true</span> <span class="c1">// Start beating immediately after object was instantiated. </span>
+<span class="p">};</span>
+</pre></div>
+
+<h4>
+<a name="option-heartbeatinterval" class="anchor" href="#option-heartbeatinterval"><span class="octicon octicon-link"></span></a>Option: heartBeatInterval</h4>
+
+<p>Interval of beating in milliseconds.
+<strong>Default:</strong> 2000 (2 seconds)
+<strong>Type:</strong> integer &gt; 0</p>
+
+<h4>
+<a name="option-checkuseractivity" class="anchor" href="#option-checkuseractivity"><span class="octicon octicon-link"></span></a>Option: checkUserActivity</h4>
+
+<p>Whether to be dependent on user's activity/focus in the document. Set it to true if you want to pause heart beating when user doesn't work with the page. This option is handy when you don't want to waste server resources when user is not present.
+<strong>Default:</strong> false
+<strong>Type:</strong> boolean</p>
+
+<h4>
+<a name="option-checkuseractivityinterval" class="anchor" href="#option-checkuseractivityinterval"><span class="octicon octicon-link"></span></a>Option: checkUserActivityInterval</h4>
+
+<p>When checkUserActivity option is true this determines how often to evaluate user's activity. Interval of checking in milliseconds.
+<strong>Default:</strong> 500 (0.5 second)
+<strong>Type:</strong> integer &gt; 0</p>
+
+<h4>
+<a name="option-limit" class="anchor" href="#option-limit"><span class="octicon octicon-link"></span></a>Option: limit</h4>
+
+<p>Define limited number of beats to be performed. Beating is stopped when limit is reached. Set 0 for no limit.
+<strong>Default:</strong> 0 (no limit applied)
+<strong>Type:</strong> integer &gt;= 0</p>
+
+<h4>
+<a name="option-autostart" class="anchor" href="#option-autostart"><span class="octicon octicon-link"></span></a>Option: autoStart</h4>
+
+<p>By default beating starts immediately when hear beater object is instantiated. In some cases you want to have this under control. Then set autoStart to false and when you want start beating call start() method.
+<strong>Default:</strong> true
+<strong>Type:</strong> boolean</p>
+
+<h3>
+<a name="heart-beater-methods" class="anchor" href="#heart-beater-methods"><span class="octicon octicon-link"></span></a>Heart Beater Methods</h3>
+
+<h4>
+<a name="method-start" class="anchor" href="#method-start"><span class="octicon octicon-link"></span></a>Method: start()</h4>
+
+<p>Start heart beating. Triggers 'heartBeatStarted' event.</p>
+
+<h4>
+<a name="method-pause" class="anchor" href="#method-pause"><span class="octicon octicon-link"></span></a>Method: pause()</h4>
+
+<p>Pause heart beating. Triggers 'heartBeatPaused' event.</p>
+
+<h4>
+<a name="method-getstatus" class="anchor" href="#method-getstatus"><span class="octicon octicon-link"></span></a>Method: getStatus()</h4>
+
+<p>Returns current status. </p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// Status constants.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">HeartBeater</span><span class="p">.</span><span class="nx">STATUS_RUNNING</span>       <span class="o">=</span> <span class="s1">'running'</span><span class="p">;</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">HeartBeater</span><span class="p">.</span><span class="nx">STATUS_PAUSED</span>        <span class="o">=</span> <span class="s1">'paused'</span><span class="p">;</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">HeartBeater</span><span class="p">.</span><span class="nx">STATUS_INACTIVE</span>      <span class="o">=</span> <span class="s1">'inactive'</span><span class="p">;</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">HeartBeater</span><span class="p">.</span><span class="nx">STATUS_LIMIT_REACHED</span> <span class="o">=</span> <span class="s1">'limit_reached'</span><span class="p">;</span>
+</pre></div>
+
+<h4>
+<a name="method-setlimitlimit" class="anchor" href="#method-setlimitlimit"><span class="octicon octicon-link"></span></a>Method: setLimit(limit)</h4>
+
+<p>Set new limit of beats to be performed. Set to 0 to disable limit.</p>
+
+<h4>
+<a name="method-getheartbeatscount" class="anchor" href="#method-getheartbeatscount"><span class="octicon octicon-link"></span></a>Method: getHeartBeatsCount()</h4>
+
+<p>Get number of beats performed.</p>
+
+<h4>
+<a name="method-getheartbeatsremaining" class="anchor" href="#method-getheartbeatsremaining"><span class="octicon octicon-link"></span></a>Method: getHeartBeatsRemaining()</h4>
+
+<p>Get number of beats remaining from the limit. Returns false when limit not applied.</p>
+
+<h3>
+<a name="heart-beater-events" class="anchor" href="#heart-beater-events"><span class="octicon octicon-link"></span></a>Heart Beater Events</h3>
+
+<p>You can listen for the following events triggered by heart beater object.</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// Event constants.</span>
+<span class="c1">// When regular beat is performed.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">HeartBeater</span><span class="p">.</span><span class="nx">EVENT_HEARTBEAT</span> <span class="o">=</span> <span class="s1">'heartBeat'</span><span class="p">;</span>
+
+<span class="c1">// When beating started.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">HeartBeater</span><span class="p">.</span><span class="nx">EVENT_HEARTBEAT_STARTED</span> <span class="o">=</span> <span class="s1">'heartBeatStarted'</span><span class="p">;</span>
+
+<span class="c1">// When beating was paused.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">HeartBeater</span><span class="p">.</span><span class="nx">EVENT_HEARTBEAT_PAUSED</span> <span class="o">=</span> <span class="s1">'heartBeatPaused'</span><span class="p">;</span>
+
+<span class="c1">// When limit of beats has been reached.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">HeartBeater</span><span class="p">.</span><span class="nx">EVENT_HEARTBEAT_LIMIT_REACHED</span> <span class="o">=</span> <span class="s1">'heartBeatLimitReached'</span><span class="p">;</span>
+</pre></div>
+
+<p>Also it is passing events from the User Activity Checker.</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// When user became active.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">UserActivityChecker</span><span class="p">.</span><span class="nx">EVENT_USER_BECAME_ACTIVE</span>   <span class="o">=</span> <span class="s1">'userBecameActive'</span><span class="p">;</span>
+
+<span class="c1">// When user became inactive.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">UserActivityChecker</span><span class="p">.</span><span class="nx">EVENT_USER_BECAME_INACTIVE</span> <span class="o">=</span> <span class="s1">'userBecameInactive'</span><span class="p">;</span>
+</pre></div>
+
+<h2>
+<a name="user-activity-checker" class="anchor" href="#user-activity-checker"><span class="octicon octicon-link"></span></a>User Activity Checker</h2>
+
+<p>User Activity Checker is helper used by heart beater to detect user's activity in the document. It can be used independently or it can be replaced by your own implementation. It's main purpose is to regularly check if document has focus and based on that trigger and event when user became active or inactive.</p>
+
+<h3>
+<a name="factory-function-createuseractivitycheckercheckinterval-document" class="anchor" href="#factory-function-createuseractivitycheckercheckinterval-document"><span class="octicon octicon-link"></span></a>Factory function $.createUserActivityChecker(checkInterval[, document])</h3>
+
+<p>For quick and easy creation of the UserActivityChecker object you can use this factory method with two arguments:</p>
+
+<ul>
+<li>
+<strong>checkInterval</strong> in milliseconds, integer greater than zero</li>
+<li>
+<strong>document</strong> object, if ommited the factory will pass the global document object. You can substitute with your own implementation of document to determine user activity. The document object must have hasFocus() function returning true/false.</li>
+</ul><h4>
+<a name="example-use-1" class="anchor" href="#example-use-1"><span class="octicon octicon-link"></span></a>Example use</h4>
+
+<p>Using smart factory function to instantiate object with minimum effort.</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// Create UserActivityChecker object which will be monitoring the activity every 200 milliseconds.</span>
+<span class="kd">var</span> <span class="nx">checker</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">createUserActivityChecker</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+
+<span class="c1">// Listen for the events.</span>
+<span class="nx">$</span><span class="p">(</span><span class="nx">checker</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'userBecameActive'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">alert</span><span class="p">(</span><span class="s1">'User started working with the document.'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="nx">checker</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'userBecameInactive'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">alert</span><span class="p">(</span><span class="s1">'User stopped working with the document.'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Don't forget to start the checker.</span>
+<span class="nx">checker</span><span class="p">.</span><span class="nx">startChecking</span><span class="p">();</span>
+</pre></div>
+
+<h3>
+<a name="user-activity-checker-methods" class="anchor" href="#user-activity-checker-methods"><span class="octicon octicon-link"></span></a>User Activity Checker Methods</h3>
+
+<h4>
+<a name="method-setinterval" class="anchor" href="#method-setinterval"><span class="octicon octicon-link"></span></a>Method: setInterval()</h4>
+
+<p>Set/Change interval of checking in milliseconds. Chainable.</p>
+
+<h4>
+<a name="method-startchecking" class="anchor" href="#method-startchecking"><span class="octicon octicon-link"></span></a>Method: startChecking()</h4>
+
+<p>Start monitoring the user's activity. Chainable.</p>
+
+<h4>
+<a name="method-stopchecking" class="anchor" href="#method-stopchecking"><span class="octicon octicon-link"></span></a>Method: stopChecking()</h4>
+
+<p>Start monitoring the user's activity. Chainable.</p>
+
+<h4>
+<a name="method-ischecking" class="anchor" href="#method-ischecking"><span class="octicon octicon-link"></span></a>Method: isChecking()</h4>
+
+<p>Returns true when checking. False when stopped.</p>
+
+<h4>
+<a name="method-isuseractive" class="anchor" href="#method-isuseractive"><span class="octicon octicon-link"></span></a>Method: isUserActive()</h4>
+
+<p>Instant re-check of user's activity. Returns true/false.</p>
+
+<h3>
+<a name="user-activity-checker-events" class="anchor" href="#user-activity-checker-events"><span class="octicon octicon-link"></span></a>User Activity Checker Events</h3>
+
+<p>You can listen for the following events triggered by the checker object.</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// When user became active.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">UserActivityChecker</span><span class="p">.</span><span class="nx">EVENT_USER_BECAME_ACTIVE</span>   <span class="o">=</span> <span class="s1">'userBecameActive'</span><span class="p">;</span>
+
+<span class="c1">// When user became inactive.</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Acheta</span><span class="p">.</span><span class="nx">UserActivityChecker</span><span class="p">.</span><span class="nx">EVENT_USER_BECAME_INACTIVE</span> <span class="o">=</span> <span class="s1">'userBecameInactive'</span><span class="p">;</span>
+</pre></div>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/acheta">acheta</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
